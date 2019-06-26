@@ -1,0 +1,6 @@
+{{- range $dir := lsdir "/twamp" -}}
+[{{base $dir}}]
+{{$destdir := printf "/twamp/%s/*" $dir}}{{range gets $destdir -}}
+{{base .Key}} = {{.Value}}
+{{end}}
+{{end}}

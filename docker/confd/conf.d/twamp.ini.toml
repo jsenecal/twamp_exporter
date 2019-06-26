@@ -1,0 +1,6 @@
+[template]
+src = "twamp.ini.tmpl"
+dest = "/opt/twamp_exporter/twamp.ini"
+keys = [
+    "/twamp"
+]
