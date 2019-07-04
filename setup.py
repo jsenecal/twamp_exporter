@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='twamp_exporter',
-    version='0.3',
+    version='0.4',
     py_modules=['twamp_exporter'],
     install_requires=[
        'click',
