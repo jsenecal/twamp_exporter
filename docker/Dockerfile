@@ -30,7 +30,7 @@ RUN install-clean.sh curl gnupg2\
     && curl -SL http://downloads.perfsonar.net/debian/perfsonar-debian-official.gpg.key | apt-key add -\
     && install-clean.sh twamp-client
 
-ARG TWAMP_EXPORTER_VERSION=0.1
+ARG TWAMP_EXPORTER_VERSION=0.3
 
 RUN mkdir -p /opt/twamp_exporter\
  && curl -SL https://github.com/jsenecal/twamp_exporter/archive/v${TWAMP_EXPORTER_VERSION}.tar.gz \
