@@ -34,6 +34,9 @@ def ntp_to_system_time(ts):
     """convert a NTP time to system time"""
     return int(ts) - NTP_DELTA
 
+def convert_to_seconds(ms):
+    return float(ms)*1000
+
 
 def sync_to_state(status):
     return SYNC_STATES[int(status)]
@@ -54,6 +57,8 @@ CONFIG_DEFAULTS = {
     'authMode': "",
     'username': "",
     'passphraseFile': "",
+    'srcLabel': platform.node(),
+    'dstLabel': ""
 }
 
 TWPING_PARAMS_MAP = {
@@ -86,26 +91,26 @@ TWPING_OUTPUT_TYPES_MAP = {
     'SESSION_PACKET_COUNT': int,
     'SENT': int,
     'SYNC': sync_to_state,
-    'MAXERR': float,
-    'MAXERR_FWD': float,
-    'MAXERR_BCK': float,
+    'MAXERR': convert_to_seconds,
+    'MAXERR_FWD': convert_to_seconds,
+    'MAXERR_BCK': convert_to_seconds,
     'DUPS_FWD': int,
     'DUPS_BCK': int,
     'LOST': int,
-    'MIN': float,
-    'MIN_FWD': float,
-    'MIN_BCK': float,
-    'MIN_PROC': float,
-    'MEDIAN': float,
-    'MEDIAN_FWD': float,
-    'MEDIAN_BCK': float,
-    'MAX': float,
-    'MAX_FWD': float,
-    'MAX_BCK': float,
-    'MAX_PROC': float,
-    'PDV': float,
-    'PDV_FWD': float,
-    'PDV_BCK': float,
+    'MIN': convert_to_seconds,
+    'MIN_FWD': convert_to_seconds,
+    'MIN_BCK': convert_to_seconds,
+    'MIN_PROC': convert_to_seconds,
+    'MEDIAN': convert_to_seconds,
+    'MEDIAN_FWD': convert_to_seconds,
+    'MEDIAN_BCK': convert_to_seconds,
+    'MAX': convert_to_seconds,
+    'MAX_FWD': convert_to_seconds,
+    'MAX_BCK': convert_to_seconds,
+    'MAX_PROC': convert_to_seconds,
+    'PDV': convert_to_seconds,
+    'PDV_FWD': convert_to_seconds,
+    'PDV_BCK': convert_to_seconds,
     'MINTTL_FWD': int,
     'MAXTTL_FWD': int,
     'MINTTL_BCK': int,
@@ -152,8 +157,6 @@ def build_twping_args(conf):
 
 
 LABELS = [
-    'job',
-    'instance',
     'to_host',
     'to_addr',
     # 'to_port',
@@ -161,7 +164,9 @@ LABELS = [
     'from_addr',
     # 'from_port',
     # 'sid',
-    'dscp'
+    'dscp',
+    'to_label',
+    'from_label'
 ]
 
 PROMETHEUS_METRICS_MAP = {
@@ -234,8 +239,8 @@ def twping_job(destination_section):
         logger.debug(stats)
         labels = {label: stats[label.upper()]
                   for label in LABELS if label.upper() in stats.keys()}
-        labels['job'] = destination_section.name
-        labels['instance'] = platform.node()
+        labels['from_label'] = destination_section['srcLabel']
+        labels['to_label'] = destination_section.get('dstLabel', destination_section.name)
         logger.debug("prometheus labels:" + str(labels))
         for stat in PROMETHEUS_METRICS_MAP.keys():
             metric = PROMETHEUS_METRICS_MAP[stat]
