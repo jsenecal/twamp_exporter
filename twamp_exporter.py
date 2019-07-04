@@ -240,7 +240,7 @@ def twping_job(destination_section):
         labels = {label: stats[label.upper()]
                   for label in LABELS if label.upper() in stats.keys()}
         labels['from_label'] = destination_section['srcLabel']
-        labels['to_label'] = destination_section.get('dstLabel', destination_section.name)
+        labels['to_label'] = destination_section['dstLabel'] if destination_section['dstLabel'] is not "" else destination_section.name
         logger.debug("prometheus labels:" + str(labels))
         for stat in PROMETHEUS_METRICS_MAP.keys():
             metric = PROMETHEUS_METRICS_MAP[stat]
